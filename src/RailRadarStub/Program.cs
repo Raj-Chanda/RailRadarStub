@@ -23,7 +23,6 @@ namespace RailRadarStub
 
             _configuration = builder.Build();
 
-
             try
             {
 
