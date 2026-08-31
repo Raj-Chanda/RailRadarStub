@@ -25,7 +25,6 @@ namespace RailRadarStub
 
             try
             {
-
                 ConfigureServices(services);
 
                 var serviceProvider = services.BuildServiceProvider();
@@ -51,12 +50,10 @@ namespace RailRadarStub
             }
         }
 
-
         private static void ConfigureServices(IServiceCollection services)
         {
             
         }
-
 
         private static void Configure(IServiceCollection services)
         {
@@ -97,7 +94,6 @@ namespace RailRadarStub
                 Log.Information("WireMock server stopped.");
                 autoResetEvent.Set();
             };
-
 
             autoResetEvent.WaitOne();
             server.Stop();
