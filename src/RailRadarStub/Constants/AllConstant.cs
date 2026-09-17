@@ -2,7 +2,7 @@ namespace RailRadarStub.Constants;
 
 public static class Header
 {
-    public const string ContentTypename = "content-type";
+    public const string ContentTypeName = "content-type";
     public const string ContentTypeValue = "application/json";
     public const string AuthorizationName = "Authorization";
     public const string AuthorizationValue = "Bearer";

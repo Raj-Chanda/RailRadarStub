@@ -1,9 +1,14 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using RailRadarStub.Common;
+using RailRadarStub.Requests;
 using RailRadarStub.Requests.Interfaces;
+using RailRadarStub.Responses;
 using RailRadarStub.Responses.Interfaces;
+using RailRadarStub.ServiceExtensions;
 using Serilog;
+using Serilog.Events;
 using WireMock.Server;
 using WireMock.Settings;
 
@@ -18,24 +23,31 @@ namespace RailRadarStub
 
             var builder = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                //.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
             _configuration = builder.Build();
 
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .WriteTo.Console(LogEventLevel.Debug)
+                .CreateLogger();
+
             try
             {
-                ConfigureServices(services);
+                Console.WriteLine("Starting RailRadarStub...");
 
+                ConfigureServices(services);
                 var serviceProvider = services.BuildServiceProvider();
 
                 Configure(services);
-
-                var resaponseProvider = serviceProvider.GetRequiredService<IEnumerable<IHubResponseProvider>>();
+                
+                var responseProvider = serviceProvider.GetRequiredService<IEnumerable<IHubResponseProvider>>();
 
                 var serverConfig = new List<IWireMockConfiguration>
                 {
 
+                    new TrainScheduleAndTimetableRequestProvider(responseProvider),
                 };
 
                 StartStubServer(serverConfig, serviceProvider);
@@ -52,7 +64,13 @@ namespace RailRadarStub
 
         private static void ConfigureServices(IServiceCollection services)
         {
-            
+            services.AddLogging(configure =>
+            {
+                configure.SetMinimumLevel(LogLevel.Debug);
+                configure.AddSerilog();
+            });
+
+            services.AddServices(_configuration!);
         }
 
         private static void Configure(IServiceCollection services)
