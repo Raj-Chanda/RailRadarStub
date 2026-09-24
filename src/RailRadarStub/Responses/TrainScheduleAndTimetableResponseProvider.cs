@@ -1,15 +1,17 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RailRadarStub.Common;
+using RailRadarStub.Constants;
 using RailRadarStub.Enums;
 using RailRadarStub.Models;
+using RailRadarStub.Models.Common;
+using RailRadarStub.Models.Train.TrainScheduleAndTimetable;
 using RailRadarStub.Responses.Interfaces;
 using RailRadarStub.Services.Interfaces;
-using RailRadarStub.Settings;
 using WireMock;
-using WireMock.Matchers;
 using WireMock.Settings;
 
 namespace RailRadarStub.Responses;
@@ -37,13 +39,12 @@ public class TrainScheduleAndTimetableResponseProvider : IHubResponseProvider
             var responseMessage = CommonUtility.GetDefaultResponseMessage();
             var uri = new Uri(requestMessage.Url);
 
-            // if (uri.PathAndQuery.Equals(new RegexMatcher("^v1\\/trains\\/\\d+$")))
-            if (uri.PathAndQuery.EndsWith("v1/trains/12345"))
+            if (Regex.IsMatch(uri.PathAndQuery, Paths.TrainScheduleAndTimetablePath))
             {
                 var fileName = "TrainScheduleAndTimetable.json";
                 var fileContent = _fileTextReader.GetTextAsync(fileName).Result;
 
-                var data = JsonConvert.DeserializeObject<TrainScheduleAndTimetable>(fileContent);
+                var data = JsonConvert.DeserializeObject<Response<Data>>(fileContent);
 
                 responseMessage.StatusCode = HttpStatusCode.OK;
                 responseMessage.BodyData!.BodyAsJson = data;

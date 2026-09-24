@@ -1,9 +1,9 @@
 using System.Runtime.Serialization;
 
-namespace RailRadarStub.Models.Base;
+namespace RailRadarStub.Models.Common;
 
 [DataContract]
-public class MetaData
+public class Meta
 {
     [DataMember(Name = "traceId")]
     public string? TraceId { get; set; }
