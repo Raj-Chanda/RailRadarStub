@@ -1,10 +1,13 @@
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using RailRadarStub.Common;
 using RailRadarStub.Enums;
+using RailRadarStub.Models;
 using RailRadarStub.Responses.Interfaces;
 using RailRadarStub.Services.Interfaces;
+using RailRadarStub.Settings;
 using WireMock;
 using WireMock.Matchers;
 using WireMock.Settings;
@@ -40,8 +43,10 @@ public class TrainScheduleAndTimetableResponseProvider : IHubResponseProvider
                 var fileName = "TrainScheduleAndTimetable.json";
                 var fileContent = _fileTextReader.GetTextAsync(fileName).Result;
 
+                var data = JsonConvert.DeserializeObject<TrainScheduleAndTimetable>(fileContent);
+
                 responseMessage.StatusCode = HttpStatusCode.OK;
-                responseMessage.BodyData!.BodyAsJson = fileContent;
+                responseMessage.BodyData!.BodyAsJson = data;
             }
 
             (IResponseMessage Message, IMapping? Mapping) tup = (responseMessage, null);

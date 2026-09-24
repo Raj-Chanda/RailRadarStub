@@ -1,3 +1,5 @@
+using System.Runtime.Serialization;
+
 namespace RailRadarStub.Settings;
 
 public class StubServiceSettings

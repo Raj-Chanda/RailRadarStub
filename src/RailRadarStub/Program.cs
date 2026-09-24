@@ -1,6 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using JsonConverter.Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using RailRadarStub.Common;
 using RailRadarStub.Requests;
 using RailRadarStub.Requests.Interfaces;
@@ -41,7 +44,7 @@ namespace RailRadarStub
                 var serviceProvider = services.BuildServiceProvider();
 
                 Configure(services);
-                
+
                 var responseProvider = serviceProvider.GetRequiredService<IEnumerable<IHubResponseProvider>>();
 
                 var serverConfig = new List<IWireMockConfiguration>
@@ -88,7 +91,11 @@ namespace RailRadarStub
                 StartAdminInterface = true,
                 MaxRequestLogCount = 1000,
                 RequestLogExpirationDuration = 148,
-                Logger = new WireMockSerilogLogger()
+                Logger = new WireMockSerilogLogger(),
+                DefaultJsonSerializer = new NewtonsoftJsonConverter(new JsonSerializerSettings
+                {
+                    ContractResolver = new DefaultContractResolver()
+                })
             });
 
             foreach (var config in serverConfig)
